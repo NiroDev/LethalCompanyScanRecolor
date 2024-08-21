@@ -4,6 +4,6 @@
     "website_url": "https://github.com/NiroDev/LethalCompanyScanRecolor",
     "description": "Changes the default scan color. Configurable.",
     "dependencies": [
-        "BepInEx-BepInExPack-5.4.2100",
+        "BepInEx-BepInExPack-5.4.2100"
     ]
 }
