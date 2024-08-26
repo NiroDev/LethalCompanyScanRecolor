@@ -1,4 +1,5 @@
 using HarmonyLib;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,17 +8,19 @@ namespace ScanRecolor
     [HarmonyPatch]
     internal class HUDManagerPatch
     {
+        private static float ColorToFloat(int color) => 1f - 1f * (255 - color);
+        public static bool ScanAnimationFinished() => HUDManager.Instance.scanEffectAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !HUDManager.Instance.scanEffectAnimator.IsInTransition(0);
         public static void SetScanColor()
         {
             var scanMaterial = ScanMaterial;
             if (scanMaterial == null) return;
 
-            scanMaterial.color = new Color(1f / Config.Instance.Red.Value, 1f / Config.Instance.Green.Value, 1f / Config.Instance.Blue.Value, Config.Instance.Alpha.Value);
+            scanMaterial.color = new Color(ColorToFloat(Config.Instance.Red.Value), ColorToFloat(Config.Instance.Green.Value), ColorToFloat(Config.Instance.Blue.Value), Config.Instance.Alpha.Value);
         }
       
         private static Material? ScanMaterial => HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>()?.material;
 
-        private static readonly float ScanDuration = 1f;
+        private static readonly float ScanDuration = 1.1f;
 
         [HarmonyPatch(typeof(HUDManager), "Start")]
         [HarmonyPostfix]
@@ -40,15 +43,20 @@ namespace ScanRecolor
             if (scanMaterial == null) yield break;
 
             var scanColor = scanMaterial.color;
-            scanColor.a = 1f;
+            scanColor.a = Config.Instance.Alpha.Value;
 
-            float startTime = Time.realtimeSinceStartup;
             yield return new WaitWhile(() =>
             {
-                scanColor.a -= Time.deltaTime / ScanDuration;
+                scanColor.a -= Time.deltaTime / ScanDuration * Config.Instance.Alpha.Value;
                 scanMaterial.color = scanColor;
-                return Time.realtimeSinceStartup - startTime < ScanDuration;
+                return scanColor.a > 0f;
             });
+
+            
+            yield return new WaitUntil(ScanAnimationFinished);
+
+            scanColor.a = Config.Instance.Alpha.Value;
+            scanMaterial.color = scanColor;
         }
     }
 }

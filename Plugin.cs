@@ -10,7 +10,7 @@ namespace ScanRecolor
     {
         public const string modGUID = "Niro.ScanRecolor";
         public const string modName = "ScanRecolor";
-        public const string modVersion = "1.0.1";
+        public const string modVersion = "1.0.2";
 
         private readonly Harmony harmony = new(modGUID);
 
