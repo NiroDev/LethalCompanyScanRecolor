@@ -9,7 +9,7 @@ namespace ScanRecolor
         private static readonly float ScanDuration = 1.3f;
 
         private static readonly MeshRenderer ScanRenderer = HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>();
-        private static float ColorToFloat(int color) => 1f - 1f * (255 - color);
+        private static float ColorToFloat(int color) => 1f / 255f * color;
         public static void SetScanColor()
         {
             var scanMaterial = ScanRenderer?.material;

@@ -1,3 +1,6 @@
+## 1.0.4 ##
+- Fixed wrong color conversion
+
 ## 1.0.3 ##
 - Fixed incompatibility of FadeOut config option with HoldDownScan mod
 
