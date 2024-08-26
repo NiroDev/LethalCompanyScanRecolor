@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using System.Collections;
 using UnityEngine;
 
@@ -7,6 +7,14 @@ namespace ScanRecolor
     [HarmonyPatch]
     internal class HUDManagerPatch
     {
+        public static void SetScanColor()
+        {
+            var scanMaterial = ScanMaterial;
+            if (scanMaterial == null) return;
+
+            scanMaterial.color = new Color(1f / Config.Instance.Red.Value, 1f / Config.Instance.Green.Value, 1f / Config.Instance.Blue.Value, Config.Instance.Alpha.Value);
+        }
+      
         private static Material? ScanMaterial => HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>()?.material;
 
         private static readonly float ScanDuration = 1f;
@@ -15,11 +23,9 @@ namespace ScanRecolor
         [HarmonyPostfix]
         public static void HUDManagerStartPostfix()
         {
-            var scanMaterial = ScanMaterial;
-            if (scanMaterial == null) return;
-
-            scanMaterial.color = new Color(1f / Config.Instance.Red.Value, 1f / Config.Instance.Green.Value, 1f / Config.Instance.Blue.Value, Config.Instance.Alpha.Value);
+            SetScanColor();
         }
+      
         [HarmonyPatch(typeof(HUDManager), "PingScan_performed")]
         [HarmonyPostfix]
         public static void PingScan_performedPostfix()
