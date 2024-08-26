@@ -1,6 +1,6 @@
 {
     "name": "ScanRecolor",
-    "version_number": "1.0.2",
+    "version_number": "1.0.3",
     "website_url": "https://github.com/NiroDev/LethalCompanyScanRecolor",
     "description": "Changes the default scan color. Configurable.",
     "dependencies": [

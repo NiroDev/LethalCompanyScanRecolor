@@ -35,6 +35,7 @@ namespace ScanRecolor
             Green.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             Blue.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             Alpha.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
+            FadeOut.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
         }
     }
 }
