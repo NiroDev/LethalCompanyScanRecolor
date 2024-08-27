@@ -48,9 +48,9 @@ namespace ScanRecolor
             if(ScanVignette != null)
                 ScanVignette.color.value = ScanColor(1f);
 
-            if(ScanBloom != null)
+            if (ScanBloom != null)
             {
-                ScanBloom.tint.Override(ScanColor(1f));
+                ScanBloom.tint.Override(ScanColor());
                 UpdateScanTexture();
             }
         }
@@ -65,17 +65,9 @@ namespace ScanRecolor
 
         public static void RecolorScanTexture(Color color)
         {
-            Plugin.mls.LogDebug("RecolorScanTexture");
-            var startTime = Time.realtimeSinceStartup;
-
             if (_baseTexture == null) // Required for the first time, as base game texture is not readable
             {
-                Plugin.mls.LogDebug("ScanTexture not readable. Converting..");
-
                 _baseTexture = Utils.MakeTextureReadable(ScanBloom.dirtTexture.value) as Texture2D;
-
-                Plugin.mls.LogDebug("Converting in seconds: " + (Time.realtimeSinceStartup - startTime));
-                startTime = Time.realtimeSinceStartup;
 
                 if (!_baseTexture.isReadable)
                 {
@@ -84,27 +76,20 @@ namespace ScanRecolor
                 }
             }
 
-            var texture = Object.Instantiate(_baseTexture);
+            var texture = new Texture2D(_baseTexture.width, _baseTexture.height);
+            texture.SetPixels(_baseTexture.GetPixels());
+            texture.Apply();
 
             Utils.RecolorTexture(ref texture, color);
 
-            Plugin.mls.LogDebug("RecolorScanTexture finished in seconds: " + (Time.realtimeSinceStartup - startTime));
-
-            Object.Destroy(ScanBloom.dirtTexture.value);
-            ScanBloom.dirtTexture.Override(Object.Instantiate(texture)); // Somehow this instantiate is required
-            Object.Destroy(texture);
-
-#if DEBUG
-            //Utils.TextureToPNG(texture, "images");
-#endif
+            ScanBloom.dirtTexture.Override(Object.Instantiate(texture));
         }
 
         public static void RevertScanTexture()
         {
             if (_baseTexture == null || ScanBloom == null) return;
 
-            Object.Destroy(ScanBloom.dirtTexture.value);
-            ScanBloom.dirtTexture.Override(Object.Instantiate(_baseTexture));
+            ScanBloom.dirtTexture.Override(_baseTexture);
         }
 
         private static float ScanProgress => 1f / ScanDuration * (HUDManager.Instance.playerPingingScan + 1f);
@@ -114,6 +99,7 @@ namespace ScanRecolor
         public static void HUDManagerStartPostfix()
         {
             SetScanColor();
+            UpdateScanTexture();
         }
 
         [HarmonyPatch(typeof(HUDManager), nameof(HUDManager.Update))]
