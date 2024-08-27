@@ -13,7 +13,10 @@ namespace ScanRecolor
         private static readonly float ScanDuration = 1.3f;
         private static Texture2D _baseTexture = null;
 
-        private static readonly MeshRenderer ScanRenderer = HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>();
+        private static bool HasScanMaterial => ScanRenderer != null && ScanRenderer.material != null;
+
+        private static MeshRenderer ScanRenderer = HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>();
+
         private static readonly Volume ScanVolume = Object.FindObjectsByType<Volume>(FindObjectsSortMode.None).Where(v => v.profile.name.StartsWith("ScanVolume")).FirstOrDefault();
         private static readonly Vignette ScanVignette = ScanVolume.profile.components.Where(c => c.name.StartsWith("Vignette")).FirstOrDefault() as Vignette;
         private static readonly Bloom ScanBloom = ScanVolume.profile.components.Where(c => c.name.StartsWith("Bloom")).FirstOrDefault() as Bloom;
@@ -29,34 +32,38 @@ namespace ScanRecolor
 
         public static void SetScanColorAlpha(float alpha)
         {
-            var scanMaterial = ScanRenderer?.material;
-            if (scanMaterial != null)
+            if(!HasScanMaterial && HUDManager.Instance.scanEffectAnimator != null)
+                ScanRenderer = HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>();
+
+            if (HasScanMaterial)
             {
-                var color = scanMaterial.color;
+                var color = ScanRenderer.material.color;
                 color.a = alpha;
-                scanMaterial.color = color;
+                ScanRenderer.material.color = color;
             }
         }
 
         public static void SetScanColor()
         {
-            var scanMaterial = ScanRenderer?.material;
-            if (scanMaterial != null)
+            if (!HasScanMaterial && HUDManager.Instance.scanEffectAnimator != null)
+                ScanRenderer = HUDManager.Instance.scanEffectAnimator.GetComponent<MeshRenderer>(); // Try to reload
+
+            if (HasScanMaterial)
             {
-                Plugin.mls.LogWarning("Default color: " + (scanMaterial.color.r * 255f) + "/" + (scanMaterial.color.g * 255f) + "/" + (scanMaterial.color.b * 255f) + "/" + scanMaterial.color.a);
-                scanMaterial.color = ScanColor();
+                //Plugin.mls.LogWarning("Default color: " + (scanMaterial.color.r * 255f) + "/" + (scanMaterial.color.g * 255f) + "/" + (scanMaterial.color.b * 255f) + "/" + scanMaterial.color.a);
+                ScanRenderer.material.color = ScanColor();
             }
 
             if (ScanVignette != null)
             {
-                Plugin.mls.LogWarning("Default vignette color: " + (ScanVignette.color.value.r * 255f) + "/" + (ScanVignette.color.value.g * 255f) + "/" + (ScanVignette.color.value.b * 255f) + "/" + ScanVignette.color.value.a);
+                //Plugin.mls.LogWarning("Default vignette color: " + (ScanVignette.color.value.r * 255f) + "/" + (ScanVignette.color.value.g * 255f) + "/" + (ScanVignette.color.value.b * 255f) + "/" + ScanVignette.color.value.a);
                 ScanVignette.color.value = ScanColor(1f);
                 UpdateVignetteIntensity();
             }
 
             if (ScanBloom != null)
             {
-                Plugin.mls.LogWarning("Default tint color: " + (ScanBloom.tint.value.r * 255f) + "/" + (ScanBloom.tint.value.g * 255f) + "/" + (ScanBloom.tint.value.b * 255f) + "/" + ScanBloom.tint.value.a);
+                //Plugin.mls.LogWarning("Default tint color: " + (ScanBloom.tint.value.r * 255f) + "/" + (ScanBloom.tint.value.g * 255f) + "/" + (ScanBloom.tint.value.b * 255f) + "/" + ScanBloom.tint.value.a);
                 ScanBloom.tint.Override(ScanColor());
                 UpdateScanTexture();
             }
@@ -78,6 +85,8 @@ namespace ScanRecolor
 
         public static void RecolorScanTexture(Color color)
         {
+            if(ScanBloom == null || ScanBloom.dirtTexture == null) return;
+
             if (_baseTexture == null) // Required for the first time, as base game texture is not readable
             {
                 _baseTexture = Utils.MakeTextureReadable(ScanBloom.dirtTexture.value) as Texture2D;
@@ -100,7 +109,7 @@ namespace ScanRecolor
 
         public static void RevertScanTexture()
         {
-            if (_baseTexture == null || ScanBloom == null) return;
+            if (_baseTexture == null || ScanBloom == null || ScanBloom.dirtTexture == null) return;
 
             ScanBloom.dirtTexture.Override(_baseTexture);
         }

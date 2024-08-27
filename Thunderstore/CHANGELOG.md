@@ -1,3 +1,6 @@
+### 1.1.2 ###
+- Avoided possible null exception when restarting the lobby
+
 ### 1.1.1 ###
 - Changed default values to ingame defaults
 - Added config option "VignetteIntensity"
