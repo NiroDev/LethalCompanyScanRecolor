@@ -1,3 +1,7 @@
+### 1.1.1 ###
+- Changed default values to ingame defaults
+- Added config option "VignetteIntensity"
+
 ## 1.1.0 ##
 - Added configurable recoloring of the scan lines
 

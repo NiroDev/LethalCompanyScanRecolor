@@ -1,5 +1,4 @@
 using HarmonyLib;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -43,16 +42,30 @@ namespace ScanRecolor
         {
             var scanMaterial = ScanRenderer?.material;
             if (scanMaterial != null)
+            {
+                Plugin.mls.LogWarning("Default color: " + (scanMaterial.color.r * 255f) + "/" + (scanMaterial.color.g * 255f) + "/" + (scanMaterial.color.b * 255f) + "/" + scanMaterial.color.a);
                 scanMaterial.color = ScanColor();
+            }
 
-            if(ScanVignette != null)
+            if (ScanVignette != null)
+            {
+                Plugin.mls.LogWarning("Default vignette color: " + (ScanVignette.color.value.r * 255f) + "/" + (ScanVignette.color.value.g * 255f) + "/" + (ScanVignette.color.value.b * 255f) + "/" + ScanVignette.color.value.a);
                 ScanVignette.color.value = ScanColor(1f);
+                UpdateVignetteIntensity();
+            }
 
             if (ScanBloom != null)
             {
+                Plugin.mls.LogWarning("Default tint color: " + (ScanBloom.tint.value.r * 255f) + "/" + (ScanBloom.tint.value.g * 255f) + "/" + (ScanBloom.tint.value.b * 255f) + "/" + ScanBloom.tint.value.a);
                 ScanBloom.tint.Override(ScanColor());
                 UpdateScanTexture();
             }
+        }
+
+        public static void UpdateVignetteIntensity()
+        {
+            if (ScanVignette != null)
+                ScanVignette.intensity.value = Config.Instance.VignetteIntensity.Value;
         }
 
         public static void UpdateScanTexture()
