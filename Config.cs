@@ -33,7 +33,7 @@ namespace ScanRecolor
             Red     = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Red", 0,      new ConfigDescription("Red scan color.", new AcceptableValueRange<int>(0, 255)));
             Green   = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Green", 12,    new ConfigDescription("Green scan color.", new AcceptableValueRange<int>(0, 255)));
             Blue    = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Blue", 255,       new ConfigDescription("Blue scan color.", new AcceptableValueRange<int>(0, 255)));
-            Alpha   = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Alpha", 0.26f,  new ConfigDescription("Alpha / opaticty.", new AcceptableValueRange<float>(0f, 1f)));
+            Alpha   = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Alpha", 0.26f,  new ConfigDescription("Alpha / opacity.", new AcceptableValueRange<float>(0f, 1f)));
             VignetteIntensity = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "VignetteIntensity", 0.46f, new ConfigDescription("Intensity of the vignette / borders effect during scan.", new AcceptableValueRange<float>(0f, 1f)));
             RandomColor = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "RandomColor", false, "Random color on each scan (ignores other Color settings)");
 
