@@ -12,6 +12,7 @@ namespace ScanRecolor
         public ConfigEntry<int> Blue { get; set; }
         public ConfigEntry<float> Alpha { get; set; }
         public ConfigEntry<float> VignetteIntensity { get; set; }
+        public ConfigEntry<bool> RandomColor { get; set; }
 
         private static Config instance = null;
         public static Config Instance
@@ -33,13 +34,15 @@ namespace ScanRecolor
             Green   = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Green", 12,    new ConfigDescription("Green scan color.", new AcceptableValueRange<int>(0, 255)));
             Blue    = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Blue", 255,       new ConfigDescription("Blue scan color.", new AcceptableValueRange<int>(0, 255)));
             Alpha   = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "Alpha", 0.26f,  new ConfigDescription("Alpha / opaticty.", new AcceptableValueRange<float>(0f, 1f)));
-            VignetteIntensity = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "VignetteIntensity", 0.46f,  new ConfigDescription("Intensity of the vignette / borders effect during scan.", new AcceptableValueRange<float>(0f, 1f)));
+            VignetteIntensity = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "VignetteIntensity", 0.46f, new ConfigDescription("Intensity of the vignette / borders effect during scan.", new AcceptableValueRange<float>(0f, 1f)));
+            RandomColor = ScanRecolor.Plugin.BepInExConfig().Bind("Color", "RandomColor", false, "Random color on each scan (ignores other Color settings)");
 
             Red.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             Green.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             Blue.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             Alpha.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
             FadeOut.SettingChanged += (obj, args) => { HUDManagerPatch.SetScanColor(); };
+            RandomColor.SettingChanged += (obj, args) => { if(!RandomColor.Value) HUDManagerPatch.SetScanColor(); };
             VignetteIntensity.SettingChanged += (obj, args) => { HUDManagerPatch.UpdateVignetteIntensity(); };
             RecolorScanLines.SettingChanged += (obj, args) => { HUDManagerPatch.UpdateScanTexture(); };
         }

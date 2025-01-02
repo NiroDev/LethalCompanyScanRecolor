@@ -1,3 +1,9 @@
+### 1.1.4 ###
+- Fixed exception when changing config option using LethalConfig
+
+### 1.1.3 ###
+- Added RandomColor config option
+
 ### 1.1.2 ###
 - Avoided possible null exception when restarting the lobby
 
