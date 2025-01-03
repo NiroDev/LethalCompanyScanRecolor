@@ -1,3 +1,6 @@
+### 1.1.5 ###
+- Fixed exceptions when rejoining lobby
+
 ### 1.1.4 ###
 - Fixed exception when changing config option using LethalConfig
 

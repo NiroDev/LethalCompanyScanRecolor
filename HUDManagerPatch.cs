@@ -14,10 +14,25 @@ namespace ScanRecolor
         private static readonly float ScanDuration = 1.3f;
         private static Texture2D _baseTexture = null;
 
-        private static bool HasScanMaterial => ScanRenderer?.material is not null;
+        private static bool HasScanMaterial => ScanRenderer is not null && ScanRenderer.material is not null;
 
         private static MeshRenderer _scanRenderer;
-        public static MeshRenderer ScanRenderer => _scanRenderer ??= HUDManager.Instance?.scanEffectAnimator?.GetComponent<MeshRenderer>();
+        public static MeshRenderer ScanRenderer
+        {
+            get
+            {
+                if (_scanRenderer is null || _scanRenderer.material is null)
+                {
+                    if (HUDManager.Instance is null || HUDManager.Instance.scanEffectAnimator is null)
+                        return null;
+
+                    if (!HUDManager.Instance.scanEffectAnimator.TryGetComponent(out _scanRenderer))
+                        return null;
+                }
+
+                return _scanRenderer;
+            }
+        }
 
         private static Volume _scanVolume;
         public static Volume ScanVolume => _scanVolume ??= Object.FindObjectsByType<Volume>(FindObjectsSortMode.None)?.Where(v => v?.profile?.name?.StartsWith("ScanVolume") ?? false)?.FirstOrDefault();
@@ -122,6 +137,7 @@ namespace ScanRecolor
         [HarmonyPostfix]
         public static void HUDManagerStartPostfix()
         {
+            _scanRenderer = null; // reset scan renderer as old one becomes invalid on round change / lobby rejoin
             SetScanColor();
             UpdateScanTexture();
         }
